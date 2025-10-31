@@ -25,8 +25,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const hiddenCanvas = document.createElement('canvas');
     const hiddenCtx = hiddenCanvas.getContext('2d');
     
-    // 存储原始图像信息
+    // 存储原始图像信息和文件名
     let originalImage = null;
+    let originalFileName = '';
     
     // 下载按钮始终可见，但初始状态为禁用
     downloadBtn.style.display = 'block';
@@ -45,6 +46,9 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (fileName) {
             fileName.textContent = file.name;
+            originalFileName = file.name.replace(/\.[^/.]+$/, "");
+        } else {
+            originalFileName = "avatar-with-flag";
         }
 
         const reader = new FileReader();
@@ -159,7 +163,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!originalImage) {
             // 如果没有原始图像，则使用当前画布
             const dataURL = imageCanvas.toDataURL('image/png');
-            downloadImage(dataURL);
+            const downloadName = originalFileName ? `${originalFileName}_with_flag.png` : 'avatar_with_flag.png';
+            downloadImage(dataURL, downloadName);
             return;
         }
 
@@ -187,14 +192,15 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // 从隐藏画布导出高分辨率图片
         const dataURL = hiddenCanvas.toDataURL('image/png');
-        downloadImage(dataURL);
+        const downloadName = originalFileName ? `${originalFileName}_with_flag.png` : 'avatar_with_flag.png';
+        downloadImage(dataURL, downloadName);
     });
 
     // 下载图片的通用函数
-    function downloadImage(dataURL) {
+    function downloadImage(dataURL, fileName) {
         const a = document.createElement('a');
         a.href = dataURL;
-        a.download = 'avatar_with_flag.png';
+        a.download = fileName;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
